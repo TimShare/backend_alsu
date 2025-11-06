@@ -3,20 +3,16 @@ set -e
 
 echo "🚀 Настройка Laravel окружения..."
 
-# Установка PHP расширений
-echo "📦 Установка PHP расширений..."
-sudo apt-get update
-sudo apt-get install -y libpng-dev libonig-dev libxml2-dev libzip-dev default-mysql-client
-sudo docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Установка Composer
-echo "📦 Установка Composer..."
-curl -sS https://getcomposer.org/installer | php
-sudo mv composer.phar /usr/local/bin/composer
+# Проверка что composer установлен
+if ! command -v composer &> /dev/null; then
+    echo "📦 Установка Composer..."
+    curl -sS https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+fi
 
 # Установка зависимостей
 echo "📦 Установка зависимостей..."
-composer install --no-interaction --prefer-dist
+composer install --no-interaction --prefer-dist --ignore-platform-reqs
 
 # Создание .env
 echo "📝 Создание .env файла..."
@@ -37,8 +33,8 @@ chmod -R 775 storage bootstrap/cache
 
 echo "✅ Настройка завершена!"
 echo ""
-echo "📌 Для запуска приложения выполните:"
-echo "   php artisan serve --host=0.0.0.0 --port=8000"
+echo "🚀 Запуск Laravel сервера в фоне..."
+nohup php artisan serve --host=0.0.0.0 --port=8000 > /tmp/laravel.log 2>&1 &
+echo "✅ Сервер запущен на порту 8000"
 echo ""
-echo "📌 MySQL не установлен. Для работы с БД используйте:"
-echo "   docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root_password -e MYSQL_DATABASE=zelen_restaurant -e MYSQL_USER=zelen_user -e MYSQL_PASSWORD=zelen_password mysql:8.0"
+echo "📌 Логи сервера: tail -f /tmp/laravel.log"

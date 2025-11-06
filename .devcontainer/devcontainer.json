@@ -1,10 +1,10 @@
 {
   "name": "Zelen Restaurant API",
-  "image": "mcr.microsoft.com/devcontainers/php:8.2",
+  "image": "thecodingmachine/php:8.2-v4-apache",
 
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers/features/git:1": {}
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
   "customizations": {
