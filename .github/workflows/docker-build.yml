@@ -18,24 +18,24 @@ jobs:
       uses: docker/setup-buildx-action@v2
 
     - name: Build Docker image
-      run: docker-compose build
+      run: docker compose build
 
     - name: Start services
-      run: docker-compose up -d
+      run: docker compose up -d
 
     - name: Wait for services to be ready
       run: |
         echo "Waiting for services to start..."
         sleep 30
-        docker-compose ps
+        docker compose ps
 
     - name: Check if app is running
       run: |
-        docker-compose ps | grep "zelen_app" | grep "Up"
+        docker compose ps | grep "zelen_app" | grep "Up"
 
     - name: Check if MySQL is running
       run: |
-        docker-compose ps | grep "zelen_mysql" | grep "Up"
+        docker compose ps | grep "zelen_mysql" | grep "Up"
 
     - name: Test API endpoint
       run: |
@@ -48,10 +48,10 @@ jobs:
       if: failure()
       run: |
         echo "=== App logs ==="
-        docker-compose logs app
+        docker compose logs app
         echo "=== MySQL logs ==="
-        docker-compose logs mysql
+        docker compose logs mysql
 
     - name: Cleanup
       if: always()
-      run: docker-compose down -v
+      run: docker compose down -v
