@@ -26,12 +26,19 @@ WORKDIR /var/www/html
 # Копируем файлы приложения
 COPY . .
 
-# Устанавливаем зависимости Composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Создаем необходимые директории
+RUN mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/bootstrap/cache
 
 # Устанавливаем права доступа
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Устанавливаем зависимости Composer
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Настраиваем Apache для Laravel
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
