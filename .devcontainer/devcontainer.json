@@ -1,6 +1,6 @@
 {
   "name": "Zelen Restaurant API",
-  "dockerComposeFile": "docker-compose.codespaces.yml",
+  "dockerComposeFile": "../docker-compose.codespaces.yml",
   "service": "app",
   "workspaceFolder": "/var/www/html",
 
