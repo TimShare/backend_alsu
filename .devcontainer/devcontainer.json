@@ -38,7 +38,9 @@
     }
   },
 
-  "postCreateCommand": "bash .devcontainer/setup-simple.sh",
+  "postCreateCommand": "bash .devcontainer/setup-codespaces.sh",
 
-  "remoteUser": "root"
+  "remoteUser": "root",
+
+  "overrideCommand": true
 }

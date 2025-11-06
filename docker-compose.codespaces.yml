@@ -6,20 +6,20 @@ services:
     image: mcr.microsoft.com/devcontainers/php:1-8.2
     container_name: zelen_app
     restart: unless-stopped
-    working_dir: /var/www/html
+    working_dir: /workspaces/backend_alsu
     volumes:
-      - ./:/var/www/html
+      - ..:/workspaces/backend_alsu:cached
     ports:
       - "8000:8000"
     environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=zelen_restaurant
-      - DB_USERNAME=zelen_user
-      - DB_PASSWORD=zelen_password
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_DATABASE: zelen_restaurant
+      DB_USERNAME: zelen_user
+      DB_PASSWORD: zelen_password
     depends_on:
       mysql:
         condition: service_healthy
