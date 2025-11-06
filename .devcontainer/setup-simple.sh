@@ -3,16 +3,15 @@ set -e
 
 echo "🚀 Настройка Laravel окружения..."
 
-# Проверка что composer установлен
-if ! command -v composer &> /dev/null; then
-    echo "📦 Установка Composer..."
-    curl -sS https://getcomposer.org/installer | php
-    sudo mv composer.phar /usr/local/bin/composer
-fi
-
 # Установка зависимостей
-echo "📦 Установка зависимостей..."
-composer install --no-interaction --prefer-dist --ignore-platform-reqs
+echo "📦 Установка Composer зависимостей..."
+composer install --no-interaction --prefer-dist || {
+    echo "⚠️ Composer install failed, возможно нужны PHP расширения"
+    echo "Попробуем установить необходимые пакеты..."
+    sudo apt-get update
+    sudo apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev libzip-dev
+    composer install --no-interaction --prefer-dist
+}
 
 # Создание .env
 echo "📝 Создание .env файла..."
@@ -33,8 +32,6 @@ chmod -R 775 storage bootstrap/cache
 
 echo "✅ Настройка завершена!"
 echo ""
-echo "🚀 Запуск Laravel сервера в фоне..."
-nohup php artisan serve --host=0.0.0.0 --port=8000 > /tmp/laravel.log 2>&1 &
-echo "✅ Сервер запущен на порту 8000"
-echo ""
-echo "📌 Логи сервера: tail -f /tmp/laravel.log"
+echo "🚀 Запуск Laravel сервера..."
+echo "Выполните в терминале:"
+echo "  php artisan serve --host=0.0.0.0 --port=8000"
