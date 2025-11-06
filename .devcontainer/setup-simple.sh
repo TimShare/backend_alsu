@@ -3,6 +3,20 @@ set -e
 
 echo "🚀 Настройка Laravel окружения..."
 
+# ВАЖНО: Создание директорий ДО composer install
+echo "📁 Создание необходимых директорий..."
+mkdir -p storage/framework/{sessions,views,cache,testing}
+mkdir -p storage/logs
+mkdir -p storage/app/public
+mkdir -p bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+# Создание .env ДО composer install
+echo "📝 Создание .env файла..."
+if [ ! -f .env ]; then
+    cp .env.codespaces .env
+fi
+
 # Установка зависимостей
 echo "📦 Установка Composer зависимостей..."
 composer install --no-interaction --prefer-dist || {
@@ -13,22 +27,9 @@ composer install --no-interaction --prefer-dist || {
     composer install --no-interaction --prefer-dist
 }
 
-# Создание .env
-echo "📝 Создание .env файла..."
-if [ ! -f .env ]; then
-    cp .env.codespaces .env
-fi
-
 # Генерация ключа
 echo "🔑 Генерация APP_KEY..."
 php artisan key:generate --no-interaction
-
-# Создание директорий
-echo "📁 Создание необходимых директорий..."
-mkdir -p storage/framework/{sessions,views,cache}
-mkdir -p storage/logs
-mkdir -p bootstrap/cache
-chmod -R 775 storage bootstrap/cache
 
 echo "✅ Настройка завершена!"
 echo ""
