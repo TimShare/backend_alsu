@@ -1,0 +1,64 @@
+{
+  "name": "Zelen Restaurant API",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/var/www/html",
+
+  // Настройки для VS Code
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "intelephense.files.maxSize": 5000000
+      }
+    }
+  },
+
+  // Прокидываем порты
+  "forwardPorts": [
+    8000,
+    3306,
+    8080
+  ],
+
+  "portsAttributes": {
+    "8000": {
+      "label": "Laravel App",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "phpMyAdmin",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Команды для запуска после создания контейнера
+  "postCreateCommand": "bash /var/www/html/.devcontainer/setup.sh",
+
+  // Позволяем использовать Git внутри контейнера
+  "remoteUser": "www-data",
+
+  // Монтируем SSH ключи
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/www-data/.ssh,readonly,type=bind,consistency=cached"
+  ],
+
+  // Дополнительные возможности для контейнера
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  }
+}

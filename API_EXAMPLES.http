@@ -1,0 +1,224 @@
+### Zelen Restaurant API - Примеры запросов
+### Используйте REST Client расширение для VS Code
+
+@baseUrl = http://localhost:8000/api
+@token = your_token_here
+
+### Проверка работы API
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+###
+
+### ===== ПОЛЬЗОВАТЕЛИ =====
+
+### Регистрация пользователя
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123",
+  "password_confirmation": "password123"
+}
+
+###
+
+### Вход пользователя
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+
+### Получить текущего пользователя
+GET {{baseUrl}}/user
+Authorization: Bearer {{token}}
+
+###
+
+### Выход
+POST {{baseUrl}}/logout
+Authorization: Bearer {{token}}
+
+###
+
+### ===== МЕНЮ =====
+
+### Получить все блюда меню
+GET {{baseUrl}}/menu
+
+###
+
+### Получить блюдо по ID
+GET {{baseUrl}}/menu/1
+
+###
+
+### Создать блюдо (требует авторизации)
+POST {{baseUrl}}/menu
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Борщ",
+  "description": "Традиционный украинский суп",
+  "price": 250,
+  "category": "супы",
+  "is_available": true
+}
+
+###
+
+### Обновить блюдо
+PUT {{baseUrl}}/menu/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Борщ Украинский",
+  "description": "Традиционный украинский суп с мясом",
+  "price": 280,
+  "category": "супы",
+  "is_available": true
+}
+
+###
+
+### Удалить блюдо
+DELETE {{baseUrl}}/menu/1
+Authorization: Bearer {{token}}
+
+###
+
+### ===== ЗАКАЗЫ =====
+
+### Создать заказ
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 2
+    },
+    {
+      "menu_item_id": 2,
+      "quantity": 1
+    }
+  ],
+  "table_number": 5,
+  "notes": "Без лука, пожалуйста"
+}
+
+###
+
+### Получить все заказы пользователя
+GET {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+
+###
+
+### Получить заказ по ID
+GET {{baseUrl}}/orders/1
+Authorization: Bearer {{token}}
+
+###
+
+### Обновить статус заказа
+PATCH {{baseUrl}}/orders/1/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "preparing"
+}
+
+###
+
+### ===== БРОНИРОВАНИЕ =====
+
+### Создать бронирование
+POST {{baseUrl}}/reservations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2024-12-01",
+  "time": "19:00",
+  "guests": 4,
+  "name": "Иван Иванов",
+  "phone": "+7 (999) 123-45-67",
+  "notes": "Окно, пожалуйста"
+}
+
+###
+
+### Получить все бронирования пользователя
+GET {{baseUrl}}/reservations
+Authorization: Bearer {{token}}
+
+###
+
+### Получить бронирование по ID
+GET {{baseUrl}}/reservations/1
+Authorization: Bearer {{token}}
+
+###
+
+### Отменить бронирование
+DELETE {{baseUrl}}/reservations/1
+Authorization: Bearer {{token}}
+
+###
+
+### ===== СТОЛИКИ =====
+
+### Получить все столики
+GET {{baseUrl}}/tables
+
+###
+
+### Получить доступные столики на дату
+GET {{baseUrl}}/tables/available?date=2024-12-01&time=19:00&guests=4
+
+###
+
+### ===== ОТЗЫВЫ =====
+
+### Получить все отзывы
+GET {{baseUrl}}/reviews
+
+###
+
+### Создать отзыв
+POST {{baseUrl}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "comment": "Отличная кухня и обслуживание!",
+  "order_id": 1
+}
+
+###
+
+### ===== КАТЕГОРИИ =====
+
+### Получить все категории меню
+GET {{baseUrl}}/categories
+
+###
+
+### Получить блюда по категории
+GET {{baseUrl}}/categories/супы/items
+
+###

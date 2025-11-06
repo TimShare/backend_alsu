@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(/opt/homebrew/opt/php@8.2/bin/php artisan:*)",
+      "Bash(python3:*)",
+      "Bash(TOKEN=\"1|HQeMArDCIx45KalFLRU6L6OmH3I11VaVUemaAZwQcfac590f\")",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
