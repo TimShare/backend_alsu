@@ -2,7 +2,7 @@
   "name": "Zelen Restaurant API",
   "dockerComposeFile": "../docker-compose.codespaces.yml",
   "service": "app",
-  "workspaceFolder": "/var/www/html",
+  "workspaceFolder": "/workspaces/backend_alsu",
 
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
@@ -39,6 +39,8 @@
   },
 
   "postCreateCommand": "bash .devcontainer/setup-codespaces.sh",
+
+  "postStartCommand": "nohup php artisan serve --host=0.0.0.0 --port=8000 > /tmp/laravel.log 2>&1 & echo 'Server started'",
 
   "remoteUser": "root",
 

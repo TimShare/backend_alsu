@@ -52,17 +52,5 @@ php artisan cache:clear
 echo ""
 echo "✅ Настройка завершена!"
 echo ""
-echo "🚀 Запуск Laravel сервера в фоне..."
-nohup php artisan serve --host=0.0.0.0 --port=8000 > /tmp/laravel.log 2>&1 &
-sleep 2
-
-if ps aux | grep -v grep | grep "artisan serve" > /dev/null; then
-    echo "✅ Сервер запущен на порту 8000!"
-    echo "📋 Логи сервера: tail -f /tmp/laravel.log"
-else
-    echo "⚠️ Не удалось запустить сервер автоматически"
-    echo "Запустите вручную: php artisan serve --host=0.0.0.0 --port=8000"
-fi
-
-echo ""
+echo "🚀 Сервер запустится автоматически через postStartCommand"
 echo "🎉 Готово! Откройте порт 8000 из вкладки PORTS"
