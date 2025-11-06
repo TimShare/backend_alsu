@@ -1,17 +1,16 @@
 version: '3.8'
 
 services:
-  # Laravel Application - используем готовый образ без сборки
+  # Laravel Application
   app:
-    image: php:8.2-apache
+    image: mcr.microsoft.com/devcontainers/php:1-8.2
     container_name: zelen_app
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
-      - ./storage:/var/www/html/storage
     ports:
-      - "8000:80"
+      - "8000:8000"
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -26,25 +25,7 @@ services:
         condition: service_healthy
     networks:
       - zelen-network
-    command: >
-      bash -c "
-      apt-get update && apt-get install -y git curl libpng-dev libonig-dev libxml2-dev zip unzip libzip-dev default-mysql-client &&
-      docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip &&
-      a2enmod rewrite &&
-      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
-      mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache &&
-      chown -R www-data:www-data storage bootstrap/cache &&
-      chmod -R 775 storage bootstrap/cache &&
-      composer install --no-interaction --prefer-dist &&
-      cp -n .env.example .env || true &&
-      php artisan key:generate --no-interaction || true &&
-      sed -i 's/DB_HOST=127.0.0.1/DB_HOST=mysql/g' .env &&
-      sed -i 's/DB_PASSWORD=password/DB_PASSWORD=zelen_password/g' .env &&
-      php artisan migrate --force --no-interaction || true &&
-      sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf &&
-      echo '<Directory /var/www/html/public>\n    Options Indexes FollowSymLinks\n    AllowOverride All\n    Require all granted\n</Directory>' >> /etc/apache2/apache2.conf &&
-      apache2-foreground
-      "
+    command: sleep infinity
 
   # MySQL Database
   mysql:
