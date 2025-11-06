@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zelen_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=zelen_restaurant
+      - DB_USERNAME=zelen_user
+      - DB_PASSWORD=zelen_password
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - zelen-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: zelen_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: zelen_restaurant
+      MYSQL_USER: zelen_user
+      MYSQL_PASSWORD: zelen_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zelen-network
+
+networks:
+  zelen-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

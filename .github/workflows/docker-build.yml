@@ -18,34 +18,34 @@ jobs:
       uses: docker/setup-buildx-action@v2
 
     - name: Build Docker image
-      run: docker compose build
+      run: docker compose -f docker-compose.ci.yml build
 
     - name: Start services
-      run: docker compose up -d
+      run: docker compose -f docker-compose.ci.yml up -d
 
     - name: Wait for services to be ready
       run: |
         echo "Waiting for services to start..."
         sleep 30
-        docker compose ps
+        docker compose -f docker-compose.ci.yml ps
         echo "=== App logs ==="
-        docker compose logs app
+        docker compose -f docker-compose.ci.yml logs app
         echo "=== MySQL logs ==="
-        docker compose logs mysql
+        docker compose -f docker-compose.ci.yml logs mysql
 
     - name: Check if app is running
       run: |
-        docker compose ps | grep "zelen_app" | grep "Up"
+        docker compose -f docker-compose.ci.yml ps | grep "zelen_app" | grep "Up"
 
     - name: Check if MySQL is running
       run: |
-        docker compose ps | grep "zelen_mysql" | grep "Up"
+        docker compose -f docker-compose.ci.yml ps | grep "zelen_mysql" | grep "Up"
 
     - name: Wait for MySQL to be fully ready
       run: |
         echo "Waiting for MySQL to be fully ready..."
         for i in {1..30}; do
-          if docker compose exec -T mysql mysql -u zelen_user -pzelen_password -e "SELECT 1" &> /dev/null; then
+          if docker compose -f docker-compose.ci.yml exec -T mysql mysql -u zelen_user -pzelen_password -e "SELECT 1" &> /dev/null; then
             echo "MySQL is ready!"
             break
           fi
@@ -66,10 +66,10 @@ jobs:
       if: failure()
       run: |
         echo "=== App logs ==="
-        docker compose logs app
+        docker compose -f docker-compose.ci.yml logs app
         echo "=== MySQL logs ==="
-        docker compose logs mysql
+        docker compose -f docker-compose.ci.yml logs mysql
 
     - name: Cleanup
       if: always()
-      run: docker compose down -v
+      run: docker compose -f docker-compose.ci.yml down -v
