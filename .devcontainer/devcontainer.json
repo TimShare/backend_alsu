@@ -1,36 +1,26 @@
 {
   "name": "Zelen Restaurant API",
-  "dockerComposeFile": "../docker-compose.codespaces.yml",
-  "service": "app",
-  "workspaceFolder": "/var/www/html",
-  "overrideCommand": false,
-  "shutdownAction": "stopCompose",
+  "image": "mcr.microsoft.com/devcontainers/php:8.2",
 
-  // Настройки для VS Code
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
   "customizations": {
     "vscode": {
       "extensions": [
         "bmewburn.vscode-intelephense-client",
-        "xdebug.php-debug",
         "mikestead.dotenv",
-        "ms-azuretools.vscode-docker",
-        "editorconfig.editorconfig",
-        "esbenp.prettier-vscode"
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash",
-        "php.validate.executablePath": "/usr/local/bin/php",
-        "intelephense.files.maxSize": 5000000
+        "php.validate.executablePath": "/usr/local/bin/php"
       }
     }
   },
 
-  // Прокидываем порты
-  "forwardPorts": [
-    8000,
-    3306,
-    8080
-  ],
+  "forwardPorts": [8000, 3306, 8080],
 
   "portsAttributes": {
     "8000": {
@@ -47,15 +37,7 @@
     }
   },
 
-  // Команды выполняются в docker-compose.codespaces.yml
-  // "postCreateCommand": "bash /var/www/html/.devcontainer/setup.sh",
+  "postCreateCommand": "bash .devcontainer/setup-simple.sh",
 
-  // Используем root так как установка идет в command
-  "remoteUser": "root",
-
-  // Дополнительные возможности для контейнера
-  "features": {
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  }
+  "remoteUser": "vscode"
 }
