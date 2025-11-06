@@ -1,8 +1,10 @@
 {
   "name": "Zelen Restaurant API",
-  "dockerComposeFile": "../docker-compose.yml",
+  "dockerComposeFile": "../docker-compose.codespaces.yml",
   "service": "app",
   "workspaceFolder": "/var/www/html",
+  "overrideCommand": false,
+  "shutdownAction": "stopCompose",
 
   // Настройки для VS Code
   "customizations": {
@@ -45,16 +47,11 @@
     }
   },
 
-  // Команды для запуска после создания контейнера
-  "postCreateCommand": "bash /var/www/html/.devcontainer/setup.sh",
+  // Команды выполняются в docker-compose.codespaces.yml
+  // "postCreateCommand": "bash /var/www/html/.devcontainer/setup.sh",
 
-  // Позволяем использовать Git внутри контейнера
-  "remoteUser": "www-data",
-
-  // Монтируем SSH ключи
-  "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/www-data/.ssh,readonly,type=bind,consistency=cached"
-  ],
+  // Используем root так как установка идет в command
+  "remoteUser": "root",
 
   // Дополнительные возможности для контейнера
   "features": {
