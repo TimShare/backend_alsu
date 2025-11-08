@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     working_dir: /workspaces/backend_alsu
     volumes:
-      - ..:/workspaces/backend_alsu:cached
+      - .:/workspaces/backend_alsu:cached
     ports:
       - "8000:8000"
     environment:

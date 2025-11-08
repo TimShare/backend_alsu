@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+# Не используем set -e, чтобы продолжить выполнение даже при ошибках установки расширений
+set -u
 
 echo "🚀 Настройка Laravel для Codespaces с MySQL..."
 
@@ -8,6 +9,8 @@ echo "📦 Установка системных зависимостей..."
 apt-get update -qq
 apt-get install -y -qq \
   default-mysql-client \
+  libmariadb-dev \
+  libmariadb-dev-compat \
   libpng-dev \
   libjpeg-dev \
   libfreetype6-dev \
@@ -17,8 +20,29 @@ apt-get install -y -qq \
 
 # Установка PHP расширений
 echo "🔧 Установка PHP расширений..."
-docker-php-ext-configure gd --with-freetype --with-jpeg > /dev/null 2>&1
-docker-php-ext-install -j$(nproc) gd pdo pdo_mysql mysqli > /dev/null 2>&1
+
+# Проверка наличия docker-php-ext-install
+if command -v docker-php-ext-install &> /dev/null; then
+  echo "   Устанавливаю GD..."
+  docker-php-ext-configure gd --with-freetype --with-jpeg > /dev/null 2>&1
+  docker-php-ext-install -j$(nproc) gd > /dev/null 2>&1 || echo "⚠️  GD не установился"
+
+  echo "   Устанавливаю PDO MySQL..."
+  docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd > /dev/null 2>&1
+  docker-php-ext-install pdo_mysql > /dev/null 2>&1 || echo "⚠️  PDO MySQL не установился"
+
+  echo "   Устанавливаю MySQLi..."
+  docker-php-ext-configure mysqli --with-mysqli=mysqlnd > /dev/null 2>&1
+  docker-php-ext-install mysqli > /dev/null 2>&1 || echo "⚠️  MySQLi не установился"
+else
+  echo "⚠️  docker-php-ext-install не найден"
+fi
+
+# Проверка установленных расширений
+echo "🔍 Проверка PHP расширений..."
+php -m | grep -i pdo > /dev/null && echo "   ✅ PDO" || echo "   ❌ PDO"
+php -m | grep -i pdo_mysql > /dev/null && echo "   ✅ PDO MySQL" || echo "   ❌ PDO MySQL"
+php -m | grep -i mysqli > /dev/null && echo "   ✅ MySQLi" || echo "   ❌ MySQLi"
 
 # 1. Создание необходимых директорий
 echo "📁 Создание директорий..."
