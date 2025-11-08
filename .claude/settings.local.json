@@ -8,7 +8,9 @@
       "Bash(cat:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(mysql:*)",
+      "Bash(php artisan db:seed:*)"
     ],
     "deny": [],
     "ask": []
