@@ -16,10 +16,14 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $orders = Order::with(['items.menuItem'])
-            ->forUser($request->user()->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Order::with(['items.menuItem', 'user']);
+
+        // Если пользователь не администратор, показываем только его заказы
+        if (!$request->user()->isAdmin()) {
+            $query->forUser($request->user()->id);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'success' => true,
@@ -32,9 +36,14 @@ class OrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $order = Order::with(['items.menuItem'])
-            ->forUser($request->user()->id)
-            ->findOrFail($id);
+        $query = Order::with(['items.menuItem', 'user']);
+
+        // Если пользователь не администратор, проверяем что заказ принадлежит ему
+        if (!$request->user()->isAdmin()) {
+            $query->forUser($request->user()->id);
+        }
+
+        $order = $query->findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -109,5 +118,38 @@ class OrderController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Обновление статуса заказа (только для администраторов)
+     */
+    public function update(Request $request, $id)
+    {
+        // Проверка прав доступа
+        if (!$request->user()->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Доступ запрещен. Только администраторы могут изменять статус заказа.',
+            ], 403);
+        }
+
+        $order = Order::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,preparing,ready,delivered,cancelled',
+        ]);
+
+        $order->update([
+            'status' => $request->status,
+        ]);
+
+        // Загружаем связанные данные
+        $order->load(['items.menuItem', 'user']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Статус заказа успешно обновлен',
+            'data' => $order,
+        ]);
     }
 }

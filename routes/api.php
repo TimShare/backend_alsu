@@ -48,6 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('orders', [OrderController::class, 'store']);
 });
 
+// Заказы (только для администраторов)
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::put('orders/{id}', [OrderController::class, 'update']);
+});
+
 // Консультации (публичное создание)
 Route::post('consultations', [ConsultationController::class, 'store']);
 
