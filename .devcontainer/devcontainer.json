@@ -5,8 +5,19 @@
   "workspaceFolder": "/workspaces/backend_alsu",
 
   "features": {
-    "ghcr.io/devcontainers/features/git:1": {}
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/php:1": {
+      "version": "8.2",
+      "installComposer": true
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
   },
+
+  "initializeCommand": "echo 'Инициализация devcontainer...'",
+
+  "onCreateCommand": "echo 'Контейнер создан, начинаем настройку...'",
 
   "customizations": {
     "vscode": {

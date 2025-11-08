@@ -3,6 +3,23 @@ set -e
 
 echo "🚀 Настройка Laravel для Codespaces с MySQL..."
 
+# 0. Установка необходимых зависимостей
+echo "📦 Установка системных зависимостей..."
+apt-get update -qq
+apt-get install -y -qq \
+  default-mysql-client \
+  libpng-dev \
+  libjpeg-dev \
+  libfreetype6-dev \
+  zip \
+  unzip \
+  > /dev/null 2>&1
+
+# Установка PHP расширений
+echo "🔧 Установка PHP расширений..."
+docker-php-ext-configure gd --with-freetype --with-jpeg > /dev/null 2>&1
+docker-php-ext-install -j$(nproc) gd pdo pdo_mysql mysqli > /dev/null 2>&1
+
 # 1. Создание необходимых директорий
 echo "📁 Создание директорий..."
 mkdir -p storage/framework/{sessions,views,cache,testing}
@@ -17,37 +34,61 @@ if [ ! -f .env ]; then
     cp .env.codespaces .env
 fi
 
-# 3. Установка composer зависимостей
-echo "📦 Установка Composer зависимостей..."
-composer install --no-interaction --prefer-dist
+# 3. Проверка Composer
+echo "🔍 Проверка Composer..."
+if ! command -v composer &> /dev/null; then
+    echo "⚠️  Composer не найден, устанавливаю..."
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+fi
+composer --version
 
-# 4. Генерация APP_KEY
+# 4. Установка composer зависимостей
+echo "📦 Установка Composer зависимостей..."
+composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# 5. Генерация APP_KEY
 echo "🔑 Генерация APP_KEY..."
 php artisan key:generate --no-interaction
 
-# 5. Ожидание готовности MySQL
+# 6. Ожидание готовности MySQL
 echo "⏳ Ожидание MySQL..."
-for i in {1..60}; do
-  if mysql -h mysql -u zelen_user -pzelen_password zelen_restaurant -e "SELECT 1" &> /dev/null; then
-    echo "✅ MySQL готов!"
-    break
+MYSQL_READY=0
+for i in {1..30}; do
+  if mysqladmin ping -h mysql -u root -proot_password --silent &> /dev/null; then
+    echo "✅ MySQL сервер доступен!"
+    # Проверяем доступность базы данных
+    if mysql -h mysql -u zelen_user -pzelen_password -e "USE zelen_restaurant; SELECT 1" &> /dev/null; then
+      echo "✅ База данных zelen_restaurant готова!"
+      MYSQL_READY=1
+      break
+    fi
   fi
-  if [ $i -eq 60 ]; then
-    echo "❌ MySQL не запустился за 2 минуты"
-    exit 1
-  fi
-  echo "Ждем MySQL... попытка $i/60"
-  sleep 2
+  echo "⏳ Ждем MySQL... попытка $i/30"
+  sleep 3
 done
 
-# 6. Выполнение миграций
-echo "🗄️ Выполнение миграций..."
-php artisan migrate --force --no-interaction
+if [ $MYSQL_READY -eq 0 ]; then
+  echo "❌ MySQL не готов, но продолжаем..."
+  echo "💡 Возможно потребуется ручной запуск миграций"
+fi
 
-# 7. Очистка кеша
+# 7. Выполнение миграций (с обработкой ошибок)
+echo "🗄️ Выполнение миграций..."
+if [ $MYSQL_READY -eq 1 ]; then
+  if php artisan migrate --force --no-interaction; then
+    echo "✅ Миграции выполнены успешно!"
+  else
+    echo "⚠️  Ошибка при выполнении миграций"
+  fi
+else
+  echo "⏭️  Пропускаем миграции (MySQL не готов)"
+fi
+
+# 8. Очистка кеша
 echo "🧹 Очистка кеша..."
 php artisan config:clear
 php artisan cache:clear
+php artisan route:clear
 
 echo ""
 echo "✅ Настройка завершена!"
